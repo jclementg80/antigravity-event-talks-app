@@ -13,7 +13,7 @@ flowchart TD
     IsCached{Is Data Cached?}
     
     User -->|1. Access Webpage| Flask
-    User -->|2. GET /api/releases| Flask
+    User -->|2. GET api releases| Flask
     Flask -->|3. Check Cache| IsCached
     
     IsCached -->|Yes| User
@@ -23,9 +23,9 @@ flowchart TD
     Flask -->|6. Store in Cache| Cache
     Flask -->|7. JSON Response| User
     
-    User -->|8. Click Tweet / X Post| User
-    User -->|9. Compose & Preview| User
-    User -->|10. Web Intent (x.com)| X[X / Twitter Platform]
+    User -->|8. Click Tweet or X Post| User
+    User -->|9. Compose and Preview| User
+    User -->|10. Web Intent to X| X[X / Twitter Platform]
 ```
 
 ## Features
