@@ -1414,3 +1414,33 @@ body {
         width: 100%;
     }
 }
+
+/* Smooth Theme Transitions */
+body, .sidebar, .release-group-card, .stat-card, #search-input, .filter-btn, .update-item, .btn-secondary, .modal-container, .preview-column, .composer-column {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Search Term Highlighting Styles */
+mark.highlight-search {
+    background-color: rgba(99, 102, 241, 0.35);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 2px;
+}
+body[data-theme="light"] mark.highlight-search {
+    background-color: rgba(234, 179, 8, 0.35);
+}
+
+/* Tooltip copy code hover indicators */
+.update-content-rich code {
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+.update-content-rich code:hover {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+}
+body[data-theme="light"] .update-content-rich code:hover {
+    background-color: rgba(79, 70, 229, 0.1) !important;
+    border-color: rgba(79, 70, 229, 0.2) !important;
+}

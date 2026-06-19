@@ -349,7 +349,7 @@ function renderNotes() {
                     </div>
                 </div>
                 <div class="update-content-rich">
-                    ${item.html}
+                    ${highlightSearchText(item.html, appState.searchQuery)}
                 </div>
             `;
             
@@ -370,6 +370,30 @@ function renderNotes() {
         });
         
         els.notesGrid.appendChild(card);
+    });
+    
+    // Setup Code Click-to-Copy Handlers
+    const codeElements = els.notesGrid.querySelectorAll('.update-content-rich code');
+    codeElements.forEach(code => {
+        code.style.cursor = 'pointer';
+        code.title = 'Click to copy code';
+        code.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const codeText = code.innerText.trim();
+            navigator.clipboard.writeText(codeText).then(() => {
+                showToast(`Code copied: "${codeText}"`);
+                
+                // Visual Flash feedback
+                const originalBg = code.style.backgroundColor;
+                code.style.backgroundColor = 'var(--primary-glow)';
+                setTimeout(() => {
+                    code.style.backgroundColor = originalBg;
+                }, 300);
+            }).catch(err => {
+                console.error('Failed to copy code:', err);
+                showToast('Failed to copy code.', 'danger');
+            });
+        });
     });
 }
 
@@ -636,4 +660,50 @@ function exportToCSV() {
         console.error('CSV export failed:', e);
         showToast('Failed to export CSV.', 'danger');
     }
+}
+
+// Highlight matched search queries inside HTML text nodes
+function highlightSearchText(html, query) {
+    if (!query) return html;
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // Walk through all text nodes in tempDiv
+    const walk = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    const nodesToReplace = [];
+    
+    while (node = walk.nextNode()) {
+        const parentTag = node.parentNode ? node.parentNode.tagName : '';
+        // Skip script/style tags and already highlighted mark tags
+        if (parentTag === 'SCRIPT' || parentTag === 'STYLE' || parentTag === 'MARK') {
+            continue;
+        }
+        
+        if (node.nodeValue.toLowerCase().includes(query)) {
+            nodesToReplace.push(node);
+        }
+    }
+    
+    nodesToReplace.forEach(textNode => {
+        const parent = textNode.parentNode;
+        if (!parent) return;
+        
+        const text = textNode.nodeValue;
+        // Escape special regex characters in search query
+        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+        
+        const span = document.createElement('span');
+        span.innerHTML = text.replace(regex, '<mark class="highlight-search">$1</mark>');
+        
+        // Insert nodes from span inside parent before textNode
+        while (span.firstChild) {
+            parent.insertBefore(span.firstChild, textNode);
+        }
+        parent.removeChild(textNode);
+    });
+    
+    return tempDiv.innerHTML;
 }
