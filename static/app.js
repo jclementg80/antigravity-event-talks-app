@@ -17,6 +17,7 @@ const els = {
     refreshBtn: document.getElementById('refresh-btn'),
     refreshSpinner: document.getElementById('refresh-spinner'),
     exportCsvBtn: document.getElementById('export-csv-btn'),
+    themeToggle: document.getElementById('theme-toggle'),
     searchInput: document.getElementById('search-input'),
     categoryFilters: document.getElementById('category-filters'),
     lastSyncTime: document.getElementById('last-sync-time'),
@@ -66,6 +67,10 @@ const icons = {
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.body.setAttribute('data-theme', savedTheme);
+    
     fetchReleases(false);
     setupEventListeners();
     setupProgressRing();
@@ -126,6 +131,17 @@ function setupEventListeners() {
     // Export CSV Button
     if (els.exportCsvBtn) {
         els.exportCsvBtn.addEventListener('click', exportToCSV);
+    }
+    
+    // Theme Toggle Button
+    if (els.themeToggle) {
+        els.themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            showToast(`Switched to ${newTheme} mode!`);
+        });
     }
     
     // Search input (with basic input listener)

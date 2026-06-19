@@ -44,6 +44,171 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light Theme Variables and Overrides */
+body[data-theme="light"] {
+    --bg-dark: #f8fafc;
+    --panel-bg: rgba(255, 255, 255, 0.7);
+    --panel-border: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --primary-glow: rgba(79, 70, 229, 0.15);
+    
+    --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+    --glow-shadow: 0 0 25px rgba(79, 70, 229, 0.05);
+}
+
+/* Light Mode element style overrides */
+body[data-theme="light"] .bg-glow {
+    opacity: 0.15;
+}
+
+body[data-theme="light"] .stat-card {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .stat-card:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .filter-btn:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body[data-theme="light"] .filter-count {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.02);
+}
+
+body[data-theme="light"] .release-group-header {
+    background: rgba(0, 0, 0, 0.01);
+    border-bottom-color: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .update-item:not(:last-child) {
+    border-bottom-color: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .update-item:hover {
+    background: rgba(0, 0, 0, 0.015);
+}
+
+body[data-theme="light"] .source-link-btn {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .source-link-btn:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .action-icon-btn {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .action-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme="light"] .action-icon-btn.tweet-btn-hover:hover {
+    background: rgba(15, 23, 42, 0.95);
+    color: white;
+    border-color: #0f172a;
+}
+
+body[data-theme="light"] .update-content-rich code {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+body[data-theme="light"] #tweet-textarea {
+    background: rgba(0, 0, 0, 0.01);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] #tweet-textarea:focus {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body[data-theme="light"] .composer-column {
+    border-right-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .modal-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .btn-close:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .btn-secondary {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+}
+
+body[data-theme="light"] .btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme="light"] .helper-btn {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .helper-btn:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="light"] .helper-btn.active {
+    background: rgba(79, 70, 229, 0.08);
+    border-color: rgba(79, 70, 229, 0.2);
+    color: #4f46e5;
+}
+
+body[data-theme="light"] .modal-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .preview-column {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+body[data-theme="light"] .toast {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f172a;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 25px rgba(79, 70, 229, 0.05);
+}
+
+/* Theme Toggle Button sun/moon icon selectors */
+.theme-icon-sun {
+    display: block;
+}
+.theme-icon-moon {
+    display: none;
+}
+
+body[data-theme="light"] .theme-icon-sun {
+    display: none;
+}
+body[data-theme="light"] .theme-icon-moon {
+    display: block;
+}
+
+
 /* Reset and Base Styles */
 * {
     box-sizing: border-box;
