@@ -16,6 +16,7 @@ const els = {
     emptyState: document.getElementById('empty-state'),
     refreshBtn: document.getElementById('refresh-btn'),
     refreshSpinner: document.getElementById('refresh-spinner'),
+    exportCsvBtn: document.getElementById('export-csv-btn'),
     searchInput: document.getElementById('search-input'),
     categoryFilters: document.getElementById('category-filters'),
     lastSyncTime: document.getElementById('last-sync-time'),
@@ -59,6 +60,7 @@ const icons = {
     calendar: `<svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
     externalLink: `<svg class="external-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
     tweet: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+    link: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
     copy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
 };
 
@@ -120,6 +122,11 @@ function setLoadingState(isLoading) {
 function setupEventListeners() {
     // Refresh Button
     els.refreshBtn.addEventListener('click', () => fetchReleases(true));
+    
+    // Export CSV Button
+    if (els.exportCsvBtn) {
+        els.exportCsvBtn.addEventListener('click', exportToCSV);
+    }
     
     // Search input (with basic input listener)
     els.searchInput.addEventListener('input', (e) => {
@@ -314,7 +321,10 @@ function renderNotes() {
                 <div class="update-item-header">
                     <span class="type-badge ${badgeClass}">${item.type}</span>
                     <div class="update-item-actions">
-                        <button class="action-icon-btn copy-btn" data-id="${item.id}" title="Copy Direct Link">
+                        <button class="action-icon-btn copy-link-btn" data-id="${item.id}" title="Copy Direct Link">
+                            ${icons.link}
+                        </button>
+                        <button class="action-icon-btn copy-text-btn" data-id="${item.id}" title="Copy Update Text">
                             ${icons.copy}
                         </button>
                         <button class="action-icon-btn tweet-btn tweet-btn-hover" data-id="${item.id}" title="Compose X / Twitter Post">
@@ -328,8 +338,12 @@ function renderNotes() {
             `;
             
             // Set up actions
-            updateItem.querySelector('.copy-btn').addEventListener('click', () => {
+            updateItem.querySelector('.copy-link-btn').addEventListener('click', () => {
                 copyLink(item.link);
+            });
+            
+            updateItem.querySelector('.copy-text-btn').addEventListener('click', () => {
+                copyText(item.text);
             });
             
             updateItem.querySelector('.tweet-btn').addEventListener('click', () => {
@@ -546,4 +560,64 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// Copy Text to Clipboard
+function copyText(text) {
+    if (!text) {
+        showToast('No text available to copy.', 'warning');
+        return;
+    }
+    
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Update text copied to clipboard!');
+    }).catch(err => {
+        console.error('Copy failed:', err);
+        showToast('Failed to copy text.', 'danger');
+    });
+}
+
+// Export Filtered Release Notes to CSV
+function exportToCSV() {
+    if (appState.filteredReleases.length === 0) {
+        showToast('No updates to export.', 'warning');
+        return;
+    }
+    
+    // CSV Headers
+    const headers = ['ID', 'Date', 'Type', 'URL', 'Text Content'];
+    
+    // Build CSV Rows
+    const rows = appState.filteredReleases.map(rel => [
+        rel.id,
+        rel.date,
+        rel.type,
+        rel.link || '',
+        // Clean up the text by escaping double quotes
+        rel.text.replace(/"/g, '""')
+    ]);
+    
+    // Combine headers and rows
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(val => `"${val}"`).join(','))
+    ].join('\n');
+    
+    try {
+        // Create Blob and trigger download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `bigquery_releases_${appState.currentCategory}_${new Date().toISOString().slice(0, 10)}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast('CSV export downloaded successfully!');
+    } catch (e) {
+        console.error('CSV export failed:', e);
+        showToast('Failed to export CSV.', 'danger');
+    }
 }
