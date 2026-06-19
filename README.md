@@ -5,27 +5,27 @@ A modern, highly-polished web application built using Python Flask, plain vanill
 ## Architecture & Data Flow
 
 ```mermaid
-graph TD
+flowchart TD
     User([User's Browser])
     Flask[Flask Web Server]
     GFeed[Google BQ Release Notes XML Feed]
     Cache[(In-Memory Cache)]
+    IsCached{Is Data Cached?}
     
-    User -- 1. Access Webpage --> Flask
-    User -- 2. GET /api/releases --> Flask
-    Flask -- 3. Check Cache (10 min) --> Cache
+    User -->|1. Access Webpage| Flask
+    User -->|2. GET /api/releases| Flask
+    Flask -->|3. Check Cache| IsCached
     
-    alt Cache Miss or Force Refresh
-        Flask -- 4. Fetch Feed --> GFeed
-        GFeed -- XML Data --> Flask
-        Flask -- 5. Parse using BeautifulSoup --> Flask
-        Flask -- 6. Store in Cache --> Cache
-    end
+    IsCached -->|Yes| User
+    IsCached -->|No or Force Refresh| GFeed
+    GFeed -->|4. XML Data| Flask
+    Flask -->|5. Parse using BeautifulSoup| Flask
+    Flask -->|6. Store in Cache| Cache
+    Flask -->|7. JSON Response| User
     
-    Flask -- 7. JSON Response (Parsed Updates) --> User
-    User -- 8. Click Tweet / X Post --> User
-    User -- 9. Compose & Preview --> User
-    User -- 10. Web Intent (x.com) --> X[X / Twitter Platform]
+    User -->|8. Click Tweet / X Post| User
+    User -->|9. Compose & Preview| User
+    User -->|10. Web Intent (x.com)| X[X / Twitter Platform]
 ```
 
 ## Features
